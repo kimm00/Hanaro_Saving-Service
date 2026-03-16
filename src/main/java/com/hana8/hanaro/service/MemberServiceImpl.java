@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 	private final MemberRepository memberRepository;
+	private final AccountService accountService;
 
 	@Override
 	public Member register(String email, String password, String nickname) {
@@ -28,7 +29,12 @@ public class MemberServiceImpl implements MemberService {
 			.role(Role.USER)
 			.build();
 
-		return memberRepository.save(member);
+		member = memberRepository.save(member);
+
+		// 회원가입 시 자유입출금 계좌 자동 생성
+		accountService.createDefaultAccount(member.getId());
+
+		return member;
 	}
 
 	@Override

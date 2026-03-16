@@ -1,11 +1,6 @@
 package com.hana8.hanaro.entity;
 
-import com.hana8.hanaro.common.enums.AccountStatus;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,31 +17,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account extends BaseEntity {
+public class ProductImage extends BaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	// 계좌번호
-	@Column(unique = true, nullable = false, length = 12)
-	private String accountNumber;
+	private String imageUrl;
 
-	// 회원
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id")
-	private Member member;
-
-	// 잔액
-	private Long balance;
-
-	// 납입 금액
-	private Long paymentAmount;
-
-	// 이자율
-	private Double interestRate;
-
-	// 계좌 상태
-	@Enumerated(EnumType.STRING)
-	private AccountStatus status;
-
+	@JoinColumn(name = "product_id")
+	private Product product;
 }
