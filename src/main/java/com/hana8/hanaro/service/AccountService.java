@@ -1,2 +1,2 @@
-package com.hana8.hanaro.service;public class AccountService {
+package com.hana8.hanaro.service;public interface AccountService {
 }

@@ -41,6 +41,7 @@ public class Product extends BaseEntity {
 	private Integer period;
 
 	// 만기 수익률
+	@Column(nullable = false)
 	private Double interestRate;
 
 	// 해지 수익률
