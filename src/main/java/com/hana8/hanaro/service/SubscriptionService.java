@@ -2,13 +2,14 @@ package com.hana8.hanaro.service;
 
 import java.util.List;
 
-import com.hana8.hanaro.entity.Subscription;
+import com.hana8.hanaro.dto.subscription.SubscriptionRequestDTO;
+import com.hana8.hanaro.dto.subscription.SubscriptionResponseDTO;
 
 public interface SubscriptionService {
 
-	Subscription subscribe(Long memberId, Long productId, Long accountId);
+	SubscriptionResponseDTO subscribe(SubscriptionRequestDTO dto);
 
-	List<Subscription> getSubscriptions(Long memberId);
+	List<SubscriptionResponseDTO> getSubscriptions(Long memberId);
 
-	Subscription cancelSubscription(Long subscriptionId);
+	SubscriptionResponseDTO cancelSubscription(Long subscriptionId);
 }
