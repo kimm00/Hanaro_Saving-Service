@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hana8.hanaro.dto.member.LoginRequestDTO;
 import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.dto.member.RegisterRequestDTO;
-import com.hana8.hanaro.entity.Member;
 import com.hana8.hanaro.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,30 +25,20 @@ public class MemberController {
 	// 회원가입
 	@PostMapping("/register")
 	public MemberResponseDTO registerMember(@RequestBody RegisterRequestDTO dto) {
-		Member member = memberService.register
-			(dto.getEmail(), dto.getPassword(), dto.getNickname());
-
-		return MemberResponseDTO.builder()
-			.id(member.getId())
-			.email(member.getEmail())
-			.nickname(member.getNickname())
-			.build();
+		return memberService.register(
+			dto.getEmail(),
+			dto.getPassword(),
+			dto.getNickname()
+		);
 	}
 
 	// 로그인
 	@PostMapping("/login")
 	public MemberResponseDTO loginMember(@RequestBody LoginRequestDTO dto) {
-		Member member = memberService.login(
+		return memberService.login(
 			dto.getEmail(),
 			dto.getPassword()
 		);
-
-		return MemberResponseDTO.builder()
-			.id(member.getId())
-			.email(member.getEmail())
-			.nickname(member.getNickname())
-			.build();
-
 	}
 
 	// 회원 전체 조회 (관리자)
