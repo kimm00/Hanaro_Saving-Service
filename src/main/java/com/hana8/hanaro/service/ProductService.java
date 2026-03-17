@@ -2,16 +2,18 @@ package com.hana8.hanaro.service;
 
 import java.util.List;
 
-import com.hana8.hanaro.entity.Product;
+import com.hana8.hanaro.dto.product.ProductRequestDTO;
+import com.hana8.hanaro.dto.product.ProductResponseDTO;
 
 public interface ProductService {
-	Product createProduct(Product product);
+	ProductResponseDTO createProduct(ProductRequestDTO dto);
 
-	Product updateProduct(Long id, Product product);
+	ProductResponseDTO updateProduct(Long id, ProductRequestDTO dto);
 
 	void deleteProduct(Long id);
 
-	Product getProduct(Long id);
+	ProductResponseDTO getProduct(Long id);
 
-	List<Product> getProducts();
+	List<ProductResponseDTO> getProducts();
+
 }
