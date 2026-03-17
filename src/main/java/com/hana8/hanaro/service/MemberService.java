@@ -2,6 +2,7 @@ package com.hana8.hanaro.service;
 
 import java.util.List;
 
+import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.entity.Member;
 
 public interface MemberService {
@@ -9,7 +10,7 @@ public interface MemberService {
 
 	Member login(String email, String password);
 
-	List<Member> getMembers();
+	List<MemberResponseDTO> getMembers();
 
-	Member getMember(Long id);
+	MemberResponseDTO getMember(Long id);
 }

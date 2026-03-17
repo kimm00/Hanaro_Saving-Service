@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.hana8.hanaro.common.enums.Role;
+import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.entity.Member;
 import com.hana8.hanaro.repository.MemberRepository;
 
@@ -50,13 +51,26 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public List<Member> getMembers() {
-		return memberRepository.findAll();
+	public List<MemberResponseDTO> getMembers() {
+		return memberRepository.findAll()
+			.stream()
+			.map(member -> MemberResponseDTO.builder()
+				.id(member.getId())
+				.email(member.getEmail())
+				.nickname(member.getNickname())
+				.build())
+			.toList();
 	}
 
 	@Override
-	public Member getMember(Long id) {
-		return memberRepository.findById(id)
+	public MemberResponseDTO getMember(Long id) {
+		Member member = memberRepository.findById(id)
 			.orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+
+		return MemberResponseDTO.builder()
+			.id(member.getId())
+			.email(member.getEmail())
+			.nickname(member.getNickname())
+			.build();
 	}
 }
