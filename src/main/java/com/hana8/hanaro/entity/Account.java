@@ -1,5 +1,7 @@
 package com.hana8.hanaro.entity;
 
+import java.time.LocalDate;
+
 import com.hana8.hanaro.common.enums.AccountStatus;
 
 import jakarta.persistence.Column;
@@ -28,7 +30,7 @@ public class Account extends BaseEntity {
 	private Long id;
 
 	// 계좌번호
-	@Column(unique = true, nullable = false, length = 12)
+	@Column(unique = true, nullable = false, length = 20)
 	private String accountNumber;
 
 	// 회원
@@ -36,17 +38,19 @@ public class Account extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	// 상품
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "subscription_id")
+	private Subscription subscription;
+
 	// 잔액
 	private Long balance;
-
-	// 납입 금액
-	private Long paymentAmount;
-
-	// 이자율
-	private Double interestRate;
 
 	// 계좌 상태
 	@Enumerated(EnumType.STRING)
 	private AccountStatus status;
+
+	// 가입일
+	private LocalDate startDate;
 
 }

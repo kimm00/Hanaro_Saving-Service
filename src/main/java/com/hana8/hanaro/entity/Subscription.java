@@ -1,5 +1,7 @@
 package com.hana8.hanaro.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -39,11 +41,17 @@ public class Subscription extends BaseEntity {
 	@JoinColumn(name = "account_id")
 	private Account account;
 
+	// 가입일
+	private LocalDate startDate;
+
 	// 가입 시 납입 금액
 	private Long paymentAmount;
 
 	// 가입 시 이자율
 	private Double interestRate;
+
+	// 납입 횟수
+	private int paidCount;
 
 	// 가입 기간
 	private Integer period;
