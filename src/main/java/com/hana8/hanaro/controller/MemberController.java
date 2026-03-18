@@ -14,6 +14,7 @@ import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.dto.member.RegisterRequestDTO;
 import com.hana8.hanaro.service.MemberService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,7 +25,7 @@ public class MemberController {
 
 	// 회원가입
 	@PostMapping("/register")
-	public MemberResponseDTO registerMember(@RequestBody RegisterRequestDTO dto) {
+	public MemberResponseDTO registerMember(@Valid @RequestBody RegisterRequestDTO dto) {
 		return memberService.register(
 			dto.getEmail(),
 			dto.getPassword(),
@@ -34,7 +35,7 @@ public class MemberController {
 
 	// 로그인
 	@PostMapping("/login")
-	public MemberResponseDTO loginMember(@RequestBody LoginRequestDTO dto) {
+	public MemberResponseDTO loginMember(@Valid @RequestBody LoginRequestDTO dto) {
 		return memberService.login(
 			dto.getEmail(),
 			dto.getPassword()

@@ -11,9 +11,14 @@ public class AccountResponseDTO {
 
 	private Long id;
 	private String accountNumber;
-	private Long memberId;   // 중요 (Member 직접 주면 안됨)
+	private Long memberId;
 	private Long balance;
 	private Long paymentAmount;
 	private Double interestRate;
 	private AccountStatus status;
+	private Long productId;
+	private Double cancelRate;
+
+	private Long currentInterest;       // 지금까지 이자
+	private Long expectedAmount;        // 만기 예상 금액
 }

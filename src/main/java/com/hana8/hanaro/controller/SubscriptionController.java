@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hana8.hanaro.dto.subscription.SubscriptionRequestDTO;
@@ -27,10 +28,26 @@ public class SubscriptionController {
 		return subscriptionService.subscribe(dto);
 	}
 
+	// 관리자용 가입 상품 검색
+	@GetMapping("/admin/search")
+	public List<SubscriptionResponseDTO> adminSearch(
+		@RequestParam String keyword
+	) {
+		return subscriptionService.searchSubscriptions(keyword);
+	}
+
 	// 내 가입 상품 조회
 	@GetMapping("/member/{memberId}")
 	public List<SubscriptionResponseDTO> getSubscriptions(@PathVariable Long memberId) {
 		return subscriptionService.getSubscriptions(memberId);
+	}
+
+	// 가입 상품 검색
+	@GetMapping("/search")
+	public List<SubscriptionResponseDTO> searchSubscriptions(
+		@RequestParam String keyword
+	) {
+		return subscriptionService.searchSubscriptions(keyword);
 	}
 
 	// 중도 해지

@@ -1,7 +1,10 @@
 package com.hana8.hanaro.dto.product;
 
+import java.util.List;
+
 import com.hana8.hanaro.common.enums.PaymentCycle;
 import com.hana8.hanaro.common.enums.ProductType;
+import com.hana8.hanaro.dto.productImage.ProductImageResponseDTO;
 
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +20,7 @@ public class ProductResponseDTO {
 	private Integer period;
 	private Double interestRate;
 	private Double cancelRate;
-	private String imagePath;
+	private String imageUrl;
+
+	private List<ProductImageResponseDTO> images;
 }

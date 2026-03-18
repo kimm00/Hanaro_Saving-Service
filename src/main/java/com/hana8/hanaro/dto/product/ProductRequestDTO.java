@@ -14,5 +14,4 @@ public class ProductRequestDTO {
 	private Integer period;
 	private Double interestRate;
 	private Double cancelRate;
-	private String imagePath;
 }
