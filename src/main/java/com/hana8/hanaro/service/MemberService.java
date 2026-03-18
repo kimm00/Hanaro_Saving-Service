@@ -49,10 +49,10 @@ public class MemberService {
 
 	public MemberResponseDTO login(String email, String password) {
 		Member member = memberRepository.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
 		if (!member.getPassword().equals(password)) {
-			throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
 		}
 
 		return memberMapper.toDTO(member);
@@ -67,7 +67,7 @@ public class MemberService {
 
 	public MemberResponseDTO getMember(Long id) {
 		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+			.orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
 
 		return memberMapper.toDTO(member);
 	}
