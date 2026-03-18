@@ -10,7 +10,5 @@ public class SubscriptionRequestDTO {
 
 	@Pattern(regexp = "\\d{3}-\\d{4}-\\d{4}",
 		message = "계좌번호는 000-0000-0000 형식이어야 합니다.")
-	private Long accountId;
-
 	private String accountNumber;
 }
