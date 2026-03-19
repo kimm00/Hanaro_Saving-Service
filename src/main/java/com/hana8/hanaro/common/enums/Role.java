@@ -1,6 +1,6 @@
 package com.hana8.hanaro.common.enums;
 
 public enum Role {
-	ADMIN,
-	USER
+	ROLE_ADMIN,
+	ROLE_USER
 }
