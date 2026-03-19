@@ -1,0 +1,16 @@
+@baseUrl=http://localhost:8080/api
+
+### 회원 계좌 목록 조회
+GET {{baseUrl}}/accounts/member/1
+
+### 계좌 상세 조회
+GET {{baseUrl}}/accounts/1
+
+### 납입
+POST {{baseUrl}}/accounts/1/payment
+
+### 계좌 해지
+PATCH {{baseUrl}}/accounts/1/close
+
+### 관리자 강제 해지
+PATCH {{baseUrl}}/accounts/admin/1/close
