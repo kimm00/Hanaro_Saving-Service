@@ -1,0 +1,110 @@
+package com.hana8.hanaro.service;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.hana8.hanaro.dto.account.AccountResponseDTO;
+import com.hana8.hanaro.dto.member.MemberResponseDTO;
+import com.hana8.hanaro.entity.Member;
+import com.hana8.hanaro.mapper.MemberMapper;
+import com.hana8.hanaro.repository.MemberRepository;
+import com.hana8.hanaro.security.JwtUtil;
+
+@ExtendWith(MockitoExtension.class)
+class MemberServiceTest {
+
+	@Mock
+	private MemberRepository memberRepository;
+	@Mock
+	private AccountService accountService;
+	@Mock
+	private MemberMapper memberMapper;
+	@Mock
+	private JwtUtil jwtUtil;
+	@Mock
+	private PasswordEncoder passwordEncoder;
+
+	@InjectMocks
+	private MemberService memberService;
+
+	@Test
+	void register() {
+		assertThrows(Exception.class,
+			() -> memberService.register("test@test.com", "1234", "nick"));
+	}
+
+	@Test
+	void register_success() {
+
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@test.com")
+			.nickname("nick")
+			.build();
+
+		when(memberRepository.existsByEmail(anyString()))
+			.thenReturn(false);
+
+		when(passwordEncoder.encode(anyString()))
+			.thenReturn("encoded");
+
+		when(memberRepository.save(any()))
+			.thenReturn(member);
+
+		when(accountService.createDefaultAccount(any()))
+			.thenReturn(mock(AccountResponseDTO.class));
+
+		var result = memberService.register("test@test.com", "1234", "nick");
+
+		assertEquals("test@test.com", result.getEmail());
+	}
+
+	@Test
+	void login() {
+		assertThrows(Exception.class,
+			() -> memberService.login("test@test.com", "1234"));
+	}
+
+	@Test
+	void getMembers() {
+		memberService.getMembers();
+		verify(memberRepository).findAll();
+	}
+
+	@Test
+	void getMember_success() {
+
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@test.com")
+			.nickname("nick")
+			.build();
+
+		when(memberRepository.findById(1L))
+			.thenReturn(Optional.of(member));
+
+		when(memberMapper.toDTO(member))
+			.thenReturn(
+				new MemberResponseDTO(1L, "test@test.com", "nick", null)
+			);
+
+		var result = memberService.getMember(1L);
+
+		assertEquals("test@test.com", result.getEmail());
+	}
+
+	@Test
+	void getMember() {
+		assertThrows(Exception.class,
+			() -> memberService.getMember(1L));
+	}
+}
