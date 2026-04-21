@@ -3,7 +3,10 @@ package com.hana8.hanaro.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+<<<<<<< HEAD
 import java.time.LocalDate;
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 import java.util.List;
 import java.util.Optional;
 
@@ -258,6 +261,7 @@ class AccountServiceTest {
 		assertThrows(IllegalArgumentException.class,
 			() -> accountService.completeAccount(1L));
 	}
+<<<<<<< HEAD
 
 	@Test
 	void makePayment_deposit() {
@@ -339,4 +343,6 @@ class AccountServiceTest {
 			() -> accountService.cancelAccount(1L));
 	}
 
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 }

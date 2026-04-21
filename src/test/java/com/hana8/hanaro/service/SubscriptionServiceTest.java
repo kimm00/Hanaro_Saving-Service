@@ -47,7 +47,11 @@ class SubscriptionServiceTest {
 	void subscribe() {
 		SubscriptionRequestDTO dto = mock(SubscriptionRequestDTO.class);
 		assertThrows(Exception.class,
+<<<<<<< HEAD
 			() -> subscriptionService.subscribe(dto, "test@email.com"));
+=======
+			() -> subscriptionService.subscribe(dto));
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 	}
 
 	@Test
@@ -71,13 +75,22 @@ class SubscriptionServiceTest {
 			.period(12)
 			.build();
 
+<<<<<<< HEAD
 		when(memberRepository.findByEmail("test@email.com"))
+=======
+		when(memberRepository.findById(1L))
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 			.thenReturn(Optional.of(member));
 
 		when(productRepository.findById(1L))
 			.thenReturn(Optional.of(product));
 
+<<<<<<< HEAD
 		when(accountRepository.existsByAccountNumber(anyString())).thenReturn(false);
+=======
+		when(accountRepository.existsByAccountNumber(anyString()))
+			.thenReturn(false);
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 
 		when(accountRepository.save(any()))
 			.thenAnswer(invocation -> invocation.getArgument(0));
@@ -89,7 +102,11 @@ class SubscriptionServiceTest {
 			.thenReturn(new SubscriptionResponseDTO());
 
 		// when
+<<<<<<< HEAD
 		SubscriptionResponseDTO result = subscriptionService.subscribe(dto, "test@email.com");
+=======
+		SubscriptionResponseDTO result = subscriptionService.subscribe(dto);
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 
 		// then
 		assertNotNull(result);
@@ -105,12 +122,17 @@ class SubscriptionServiceTest {
 	@Test
 	void cancelSubscription() {
 		assertThrows(Exception.class,
+<<<<<<< HEAD
 			() -> subscriptionService.cancelSubscription(1L, "test@gmail.com"));
+=======
+			() -> subscriptionService.cancelSubscription(1L));
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 	}
 
 	@Test
 	void cancelSubscription_success() {
 
+<<<<<<< HEAD
 		Member member = Member.builder()
 			.id(1L)
 			.email("test@email.com")
@@ -119,6 +141,10 @@ class SubscriptionServiceTest {
 		Subscription sub = Subscription.builder()
 			.id(1L)
 			.member(member)
+=======
+		Subscription sub = Subscription.builder()
+			.id(1L)
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 			.canceled(false)
 			.status(SubscriptionStatus.ACTIVE)
 			.paymentAmount(1000L)
@@ -136,8 +162,12 @@ class SubscriptionServiceTest {
 		when(subscriptionMapper.toDTO(any()))
 			.thenReturn(new SubscriptionResponseDTO());
 
+<<<<<<< HEAD
 		SubscriptionResponseDTO result =
 			subscriptionService.cancelSubscription(1L, "test@email.com");
+=======
+		SubscriptionResponseDTO result = subscriptionService.cancelSubscription(1L);
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 
 		assertNotNull(result);
 		assertTrue(sub.isCanceled());
@@ -216,6 +246,7 @@ class SubscriptionServiceTest {
 
 		assertNotNull(result);
 	}
+<<<<<<< HEAD
 
 	@Test
 	void cancelSubscription_notOwner() {
@@ -374,4 +405,6 @@ class SubscriptionServiceTest {
 		assertThrows(IllegalArgumentException.class,
 			() -> subscriptionService.subscribe(dto, "test@test.com"));
 	}
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 }

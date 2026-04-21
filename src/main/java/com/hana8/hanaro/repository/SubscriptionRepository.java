@@ -10,9 +10,9 @@ import org.springframework.data.repository.query.Param;
 import com.hana8.hanaro.entity.Subscription;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-	List<Subscription> findByMemberId(Long memberId);
-
 	Optional<Subscription> findByAccountId(Long accountId);
+
+	List<Subscription> findByMemberId(Long memberId);
 
 	// 중복 가입 방지
 	boolean existsByMemberIdAndProductId(Long memberId, Long productId);

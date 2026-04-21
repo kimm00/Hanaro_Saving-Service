@@ -3,7 +3,10 @@ package com.hana8.hanaro.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+<<<<<<< HEAD
 import java.util.List;
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+<<<<<<< HEAD
 import com.hana8.hanaro.common.enums.Role;
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 import com.hana8.hanaro.dto.account.AccountResponseDTO;
 import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.entity.Member;
@@ -109,6 +115,7 @@ class MemberServiceTest {
 		assertThrows(Exception.class,
 			() -> memberService.getMember(1L));
 	}
+<<<<<<< HEAD
 
 	@Test
 	void register_duplicateEmail() {
@@ -191,4 +198,6 @@ class MemberServiceTest {
 		assertEquals(1, result.size());
 		assertEquals("test@test.com", result.get(0).getEmail());
 	}
+=======
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 }

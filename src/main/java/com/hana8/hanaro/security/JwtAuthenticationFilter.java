@@ -101,5 +101,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		out.println(objectMapper.writeValueAsString(Map.of("error", message)));
 		out.close();
 	}
-
 }

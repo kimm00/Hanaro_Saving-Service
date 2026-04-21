@@ -27,6 +27,7 @@ class SubscriptionControllerTest {
 
 	@Test
 	void subscribeProduct() {
+<<<<<<< HEAD
 		// given
 		SubscriptionRequestDTO dto = new SubscriptionRequestDTO();
 
@@ -41,6 +42,15 @@ class SubscriptionControllerTest {
 			subscriptionController.subscribeProduct(dto, auth);
 
 		// then
+=======
+		SubscriptionRequestDTO dto = new SubscriptionRequestDTO();
+
+		when(subscriptionService.subscribe(dto))
+			.thenReturn(SubscriptionResponseDTO.builder().id(1L).build());
+
+		SubscriptionResponseDTO result = subscriptionController.subscribeProduct(dto);
+
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 		assertEquals(1L, result.getId());
 	}
 
@@ -60,6 +70,7 @@ class SubscriptionControllerTest {
 
 	@Test
 	void cancelSubscription() {
+<<<<<<< HEAD
 		Authentication auth = mock(Authentication.class);
 		when(auth.getName()).thenReturn("test@test.com");
 
@@ -68,6 +79,13 @@ class SubscriptionControllerTest {
 
 		SubscriptionResponseDTO result =
 			subscriptionController.cancelSubscription(1L, auth);
+=======
+		when(subscriptionService.cancelSubscription(1L))
+			.thenReturn(SubscriptionResponseDTO.builder().id(1L).build());
+
+		SubscriptionResponseDTO result =
+			subscriptionController.cancelSubscription(1L);
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 
 		assertEquals(1L, result.getId());
 	}

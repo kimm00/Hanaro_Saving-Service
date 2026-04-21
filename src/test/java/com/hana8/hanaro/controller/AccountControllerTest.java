@@ -224,7 +224,11 @@ class AccountControllerTest {
 		when(accountService.completeAccount(accountId)).thenReturn(mockResponse);
 
 		mockMvc.perform(
+<<<<<<< HEAD
 				patch("/api/accounts/admin/{accountId}/complete", accountId) // 🔥 FIX
+=======
+				patch("/api/accounts/admin/accounts/{accountId}/complete", accountId)
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
 			)
 			.andExpect(status().isOk());
 
