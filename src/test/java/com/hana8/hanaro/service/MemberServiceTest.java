@@ -3,6 +3,7 @@ package com.hana8.hanaro.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.hana8.hanaro.common.enums.Role;
 import com.hana8.hanaro.dto.account.AccountResponseDTO;
 import com.hana8.hanaro.dto.member.MemberResponseDTO;
 import com.hana8.hanaro.entity.Member;
@@ -106,5 +108,87 @@ class MemberServiceTest {
 	void getMember() {
 		assertThrows(Exception.class,
 			() -> memberService.getMember(1L));
+	}
+
+	@Test
+	void register_duplicateEmail() {
+
+		when(memberRepository.existsByEmail(anyString()))
+			.thenReturn(true);
+
+		assertThrows(IllegalArgumentException.class,
+			() -> memberService.register("test@test.com", "1234", "nick"));
+	}
+
+	@Test
+	void login_success() {
+
+		Member member = Member.builder()
+			.email("test@test.com")
+			.password("encoded")
+			.role(Role.ROLE_USER)
+			.build();
+
+		when(memberRepository.findByEmail(anyString()))
+			.thenReturn(Optional.of(member));
+
+		when(passwordEncoder.matches(anyString(), anyString()))
+			.thenReturn(true);
+
+		when(jwtUtil.generateToken(anyMap(), anyInt()))
+			.thenReturn("mock-token");
+
+		var result = memberService.login("test@test.com", "12345678");
+
+		assertEquals("mock-token", result.getToken());
+	}
+
+	@Test
+	void login_wrongPassword() {
+
+		Member member = Member.builder()
+			.email("test@test.com")
+			.password("encoded")
+			.build();
+
+		when(memberRepository.findByEmail(anyString()))
+			.thenReturn(Optional.of(member));
+
+		when(passwordEncoder.matches(anyString(), anyString()))
+			.thenReturn(false);
+
+		assertThrows(IllegalArgumentException.class,
+			() -> memberService.login("test@test.com", "1234"));
+	}
+
+	@Test
+	void login_emailNotFound() {
+
+		when(memberRepository.findByEmail(anyString()))
+			.thenReturn(Optional.empty());
+
+		assertThrows(IllegalArgumentException.class,
+			() -> memberService.login("test@test.com", "1234"));
+	}
+
+	@Test
+	void getMembers_result() {
+
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@test.com")
+			.nickname("nick")
+			.build();
+
+		when(memberRepository.findAll())
+			.thenReturn(List.of(member));
+
+		when(memberMapper.toDTO(member))
+			.thenReturn(new MemberResponseDTO(1L, "test@test.com", "nick", null));
+
+		var result = memberService.getMembers();
+
+		assertEquals(1, result.size());
+		assertEquals("test@test.com", result.get(0).getEmail());
 	}
 }

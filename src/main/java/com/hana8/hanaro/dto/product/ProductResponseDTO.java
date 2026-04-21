@@ -1,7 +1,5 @@
 package com.hana8.hanaro.dto.product;
 
-import java.util.List;
-
 import com.hana8.hanaro.common.enums.PaymentCycle;
 import com.hana8.hanaro.common.enums.ProductType;
 import com.hana8.hanaro.dto.productImage.ProductImageResponseDTO;
@@ -22,5 +20,5 @@ public class ProductResponseDTO {
 	private Double cancelRate;
 	private String imageUrl;
 
-	private List<ProductImageResponseDTO> images;
+	private ProductImageResponseDTO images;
 }

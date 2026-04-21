@@ -47,7 +47,7 @@ class SubscriptionServiceTest {
 	void subscribe() {
 		SubscriptionRequestDTO dto = mock(SubscriptionRequestDTO.class);
 		assertThrows(Exception.class,
-			() -> subscriptionService.subscribe(dto));
+			() -> subscriptionService.subscribe(dto, "test@email.com"));
 	}
 
 	@Test
@@ -71,14 +71,13 @@ class SubscriptionServiceTest {
 			.period(12)
 			.build();
 
-		when(memberRepository.findById(1L))
+		when(memberRepository.findByEmail("test@email.com"))
 			.thenReturn(Optional.of(member));
 
 		when(productRepository.findById(1L))
 			.thenReturn(Optional.of(product));
 
-		when(accountRepository.existsByAccountNumber(anyString()))
-			.thenReturn(false);
+		when(accountRepository.existsByAccountNumber(anyString())).thenReturn(false);
 
 		when(accountRepository.save(any()))
 			.thenAnswer(invocation -> invocation.getArgument(0));
@@ -90,7 +89,7 @@ class SubscriptionServiceTest {
 			.thenReturn(new SubscriptionResponseDTO());
 
 		// when
-		SubscriptionResponseDTO result = subscriptionService.subscribe(dto);
+		SubscriptionResponseDTO result = subscriptionService.subscribe(dto, "test@email.com");
 
 		// then
 		assertNotNull(result);
@@ -106,14 +105,20 @@ class SubscriptionServiceTest {
 	@Test
 	void cancelSubscription() {
 		assertThrows(Exception.class,
-			() -> subscriptionService.cancelSubscription(1L));
+			() -> subscriptionService.cancelSubscription(1L, "test@gmail.com"));
 	}
 
 	@Test
 	void cancelSubscription_success() {
 
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@email.com")
+			.build();
+
 		Subscription sub = Subscription.builder()
 			.id(1L)
+			.member(member)
 			.canceled(false)
 			.status(SubscriptionStatus.ACTIVE)
 			.paymentAmount(1000L)
@@ -131,7 +136,8 @@ class SubscriptionServiceTest {
 		when(subscriptionMapper.toDTO(any()))
 			.thenReturn(new SubscriptionResponseDTO());
 
-		SubscriptionResponseDTO result = subscriptionService.cancelSubscription(1L);
+		SubscriptionResponseDTO result =
+			subscriptionService.cancelSubscription(1L, "test@email.com");
 
 		assertNotNull(result);
 		assertTrue(sub.isCanceled());
@@ -209,5 +215,163 @@ class SubscriptionServiceTest {
 		SubscriptionResponseDTO result = subscriptionService.matureSubscription(1L);
 
 		assertNotNull(result);
+	}
+
+	@Test
+	void cancelSubscription_notOwner() {
+		Member member = Member.builder()
+			.id(1L)
+			.email("real@email.com")
+			.build();
+
+		Subscription sub = Subscription.builder()
+			.member(member)
+			.status(SubscriptionStatus.ACTIVE)
+			.build();
+
+		when(subscriptionRepository.findById(1L))
+			.thenReturn(Optional.of(sub));
+
+		assertThrows(Exception.class,
+			() -> subscriptionService.cancelSubscription(1L, "fake@email.com"));
+	}
+
+	@Test
+	void matureSubscription_notActive() {
+
+		Subscription sub = Subscription.builder()
+			.status(SubscriptionStatus.COMPLETED)
+			.build();
+
+		when(subscriptionRepository.findById(1L))
+			.thenReturn(Optional.of(sub));
+
+		assertThrows(IllegalStateException.class,
+			() -> subscriptionService.matureSubscription(1L));
+	}
+
+	@Test
+	void adminSearch_filterByMemberId() {
+
+		Member m1 = Member.builder().id(1L).build();
+		Member m2 = Member.builder().id(2L).build();
+
+		Subscription s1 = Subscription.builder().member(m1).build();
+		Subscription s2 = Subscription.builder().member(m2).build();
+
+		when(subscriptionRepository.findAll())
+			.thenReturn(List.of(s1, s2));
+
+		when(subscriptionMapper.toDTO(any()))
+			.thenReturn(new SubscriptionResponseDTO());
+
+		List<?> result = subscriptionService.adminSearch(1L, null);
+
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	void adminSearch_filterByStatus() {
+
+		Subscription s1 = Subscription.builder()
+			.status(SubscriptionStatus.ACTIVE)
+			.build();
+
+		Subscription s2 = Subscription.builder()
+			.status(SubscriptionStatus.CANCELED)
+			.build();
+
+		when(subscriptionRepository.findAll())
+			.thenReturn(List.of(s1, s2));
+
+		when(subscriptionMapper.toDTO(any()))
+			.thenReturn(new SubscriptionResponseDTO());
+
+		List<?> result = subscriptionService.adminSearch(null, "ACTIVE");
+
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	void getSubscriptions_withData() {
+
+		Subscription sub = Subscription.builder()
+			.paymentAmount(1000L)
+			.interestRate(2.0)
+			.paidCount(1)
+			.product(Product.builder().cancelRate(1.0).build())
+			.build();
+
+		when(subscriptionRepository.findByMemberId(1L))
+			.thenReturn(List.of(sub));
+
+		when(subscriptionMapper.toDTO(any()))
+			.thenReturn(new SubscriptionResponseDTO());
+
+		List<?> result = subscriptionService.getSubscriptions(1L);
+
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	void subscribe_withAccountNumber() {
+
+		SubscriptionRequestDTO dto = new SubscriptionRequestDTO();
+		dto.setProductId(1L);
+		dto.setAccountNumber("123-1234-1234");
+
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@test.com")
+			.build();
+
+		Product product = Product.builder()
+			.id(1L)
+			.build();
+
+		when(memberRepository.findByEmail(any()))
+			.thenReturn(Optional.of(member));
+
+		when(productRepository.findById(1L))
+			.thenReturn(Optional.of(product));
+
+		when(accountRepository.existsByAccountNumber(any()))
+			.thenReturn(false);
+
+		when(accountRepository.save(any()))
+			.thenAnswer(i -> i.getArgument(0));
+
+		when(subscriptionRepository.save(any()))
+			.thenAnswer(i -> i.getArgument(0));
+
+		when(subscriptionMapper.toDTO(any()))
+			.thenReturn(new SubscriptionResponseDTO());
+
+		subscriptionService.subscribe(dto, "test@test.com");
+	}
+
+	@Test
+	void subscribe_duplicateAccountNumber() {
+
+		SubscriptionRequestDTO dto = new SubscriptionRequestDTO();
+		dto.setProductId(1L);
+		dto.setAccountNumber("123-1234-1234");
+
+		Member member = Member.builder()
+			.id(1L)
+			.email("test@test.com")
+			.build();
+
+		when(memberRepository.findByEmail(any()))
+			.thenReturn(Optional.of(member));
+
+		when(productRepository.findById(1L))
+			.thenReturn(Optional.of(Product.builder().build()));
+
+		when(accountRepository.existsByAccountNumber(any()))
+			.thenReturn(true);
+
+		assertThrows(IllegalArgumentException.class,
+			() -> subscriptionService.subscribe(dto, "test@test.com"));
 	}
 }

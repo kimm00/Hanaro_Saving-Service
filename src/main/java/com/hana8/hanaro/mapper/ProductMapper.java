@@ -13,7 +13,7 @@ import com.hana8.hanaro.entity.ProductImage;
 public interface ProductMapper {
 	// Entity -> Response DTO
 	@Mapping(target = "imageUrl", expression = "java(getThumbnail(product))")
-	@Mapping(target = "images", source = "images")
+	@Mapping(target = "images", expression = "java(getFirstImage(product))")
 	ProductResponseDTO toDTO(Product product);
 
 	// RequestDTO → Entity
@@ -24,13 +24,28 @@ public interface ProductMapper {
 	ProductImageResponseDTO toImageDTO(ProductImage image);
 
 	default String getThumbnail(Product product) {
-		if (product.getImages() == null)
+		if (product.getImages() == null || product.getImages().isEmpty()) {
 			return null;
+		}
 
 		return product.getImages().stream()
 			.filter(ProductImage::isThumbnail)
 			.findFirst()
 			.map(ProductImage::getImageUrl)
 			.orElse(null);
+	}
+
+	default ProductImageResponseDTO getFirstImage(Product product) {
+		if (product.getImages() == null || product.getImages().isEmpty())
+			return null;
+
+		ProductImage image = product.getImages().get(0);
+
+		return ProductImageResponseDTO.builder()
+			.id(image.getId())
+			.imageUrl(image.getImageUrl())
+			.remark(image.getRemark())
+			.thumbnail(image.isThumbnail())
+			.build();
 	}
 }

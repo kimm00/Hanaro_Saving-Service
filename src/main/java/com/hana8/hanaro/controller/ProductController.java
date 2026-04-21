@@ -2,6 +2,7 @@ package com.hana8.hanaro.controller;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,16 +27,18 @@ public class ProductController {
 	private final ProductService productService;
 
 	@PostMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	ProductResponseDTO createProduct(@RequestBody ProductRequestDTO dto) {
 		return productService.createProduct(dto);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping(
 		value = "/{productId}/images",
 		consumes = "multipart/form-data"
 	)
 	public ProductResponseDTO uploadImages(
-		@PathVariable("productId") Long productId,
+		@PathVariable Long productId,
 		@ModelAttribute ProductImageRequestDTO dto
 	) {
 		dto.setProductId(productId);
@@ -55,6 +58,7 @@ public class ProductController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	ProductResponseDTO updateProduct(
 		@PathVariable("id") Long id,
 		@RequestBody ProductRequestDTO dto) {
@@ -62,10 +66,12 @@ public class ProductController {
 	}
 
 	@DeleteMapping("/{id}")
-	public void deleteProduct(@PathVariable Long id) {
+	@PreAuthorize("hasRole('ADMIN')")
+	public void deleteProduct(@PathVariable("id") Long id) {
 		productService.deleteProduct(id);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{productId}/images/{imageId}")
 	public void deleteProductImage(
 		@PathVariable("productId") Long productId,
@@ -73,4 +79,5 @@ public class ProductController {
 	) {
 		productService.deleteImage(productId, imageId);
 	}
+
 }

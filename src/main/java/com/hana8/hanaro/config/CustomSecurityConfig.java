@@ -55,6 +55,12 @@ public class CustomSecurityConfig {
 					"/actuator/**"
 				).permitAll()
 				.requestMatchers("/api/products/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/members/**").hasRole("ADMIN")
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 			)
 

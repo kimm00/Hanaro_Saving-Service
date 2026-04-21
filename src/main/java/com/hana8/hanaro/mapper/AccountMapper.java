@@ -11,14 +11,5 @@ public interface AccountMapper {
 
 	// Entity → DTO
 	@Mapping(source = "member.id", target = "memberId")
-	@Mapping(target = "productId", expression = "java(getProductId(account))")
 	AccountResponseDTO toDTO(Account account);
-
-	default Long getProductId(Account account) {
-		if (account.getSubscription() == null)
-			return null;
-		if (account.getSubscription().getProduct() == null)
-			return null;
-		return account.getSubscription().getProduct().getId();
-	}
 }

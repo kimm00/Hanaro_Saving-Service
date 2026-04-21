@@ -224,7 +224,7 @@ class AccountControllerTest {
 		when(accountService.completeAccount(accountId)).thenReturn(mockResponse);
 
 		mockMvc.perform(
-				patch("/api/accounts/admin/accounts/{accountId}/complete", accountId)
+				patch("/api/accounts/admin/{accountId}/complete", accountId) // 🔥 FIX
 			)
 			.andExpect(status().isOk());
 

@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,12 +22,17 @@ import com.hana8.hanaro.mapper.ProductMapper;
 import com.hana8.hanaro.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 	private final ProductRepository productRepository;
 	private final ProductMapper productMapper;
+
+	@Value("${upload.path}")
+	private String uploadBasePath;
 
 	private String getTodayFolder() {
 		return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -34,12 +40,16 @@ public class ProductService {
 
 	// 생성
 	public ProductResponseDTO createProduct(ProductRequestDTO dto) {
+		log.info("상품 생성: name={}", dto.getName());
+
 		Product product = productMapper.toEntity(dto);
 		return productMapper.toDTO(productRepository.save(product));
 	}
 
 	// 수정
 	public ProductResponseDTO updateProduct(Long id, ProductRequestDTO dto) {
+		log.info("상품 수정: id={}, name={}", id, dto.getName());
+
 		Product product = productRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
@@ -56,6 +66,8 @@ public class ProductService {
 
 	// 삭제
 	public void deleteProduct(Long id) {
+		log.info("상품 삭제: id={}", id);
+
 		Product product = productRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
@@ -64,69 +76,63 @@ public class ProductService {
 
 	// 이미지 업로드
 	public ProductResponseDTO uploadImages(ProductImageRequestDTO dto) {
+		System.out.println("=== 이미지 업로드 시작 ===");
 
 		Product product = productRepository.findById(dto.getProductId())
 			.orElseThrow(() -> new IllegalArgumentException("상품이 존재하지 않습니다."));
 
-		List<MultipartFile> files = dto.getFiles();
-		List<String> remarks = dto.getRemarks();
+		MultipartFile file = dto.getFiles();
+		String remark = dto.getRemarks();
 
-		// 날짜 폴더
+		if (file == null || file.isEmpty()) {
+			throw new IllegalArgumentException("파일이 비어있습니다.");
+		}
+
+		if (file.getSize() > 2 * 1024 * 1024) {
+			throw new IllegalArgumentException("파일 최대 크기는 2MB입니다.");
+		}
+
 		String today = getTodayFolder();
-		Path uploadPath = Paths.get("src/main/resources/static/upload/" + today);
+		Path uploadPath = Paths.get(uploadBasePath, today);
 
 		try {
 			Files.createDirectories(uploadPath);
 		} catch (IOException e) {
-			throw new IllegalArgumentException("폴더 생성에 실패했습니다.");
+			throw new IllegalArgumentException("폴더 생성 실패");
 		}
 
-		long totalSize = 0;
+		String orgName = file.getOriginalFilename();
+		String saveName = UUID.randomUUID() + "_" + orgName;
 
-		for (int i = 0; i < files.size(); i++) {
-			MultipartFile file = files.get(i);
+		try {
+			Path filePath = uploadPath.resolve(saveName);
 
-			// 파일 크기 체크
-			if (file.getSize() > 2 * 1024 * 1024) {
-				throw new IllegalArgumentException("파일 하나 최대 크기는 2MB입니다.");
-			}
+			file.transferTo(filePath.toFile());
 
-			totalSize += file.getSize();
-			if (totalSize > 10 * 1024 * 1024) {
-				throw new IllegalArgumentException("총 파일 크기는 10MB 초과할 수 없습니다.");
-			}
-
-			String orgName = file.getOriginalFilename();
-			String saveName = UUID.randomUUID() + "_" + orgName; // 파일 이름 겹침 방지
-
-			try {
-				Path filePath = uploadPath.resolve(saveName);
-				Files.write(filePath, file.getBytes());
-			} catch (IOException e) {
-				throw new IllegalArgumentException("파일 저장에 실패했습니다.");
-			}
-
-			String remark = (remarks != null && remarks.size() > i)
-				? remarks.get(i)
-				: null;
-
-			boolean hasThumbnail = product.getImages().stream() // 기존 썸네일 있으면 새로 안 만듦
-				.anyMatch(ProductImage::isThumbnail);
-
-			boolean isThumbnail = (!hasThumbnail && i == 0); // 없으면 첫 번째 사진 썸네일
-
-			ProductImage image = ProductImage.builder()
-				.orgName(orgName)
-				.saveName(saveName)
-				.saveDir(today)
-				.remark(remark)
-				.isThumbnail(isThumbnail)
-				.build();
-
-			product.addImage(image);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("파일 저장 실패");
 		}
 
-		return productMapper.toDTO(productRepository.save(product));
+		boolean hasThumbnail = product.getImages() != null &&
+			product.getImages().stream().anyMatch(ProductImage::isThumbnail);
+
+		boolean isThumbnail = !hasThumbnail;
+
+		ProductImage image = ProductImage.builder()
+			.orgName(orgName)
+			.saveName(saveName)
+			.saveDir(today)
+			.remark(remark)
+			.isThumbnail(isThumbnail)
+			.build();
+
+		product.addImage(image);
+
+		System.out.printf("이미지 엔티티 추가 완료");
+
+		Product saved = productRepository.save(product);
+
+		return productMapper.toDTO(saved);
 	}
 
 	// 이미지 삭제
@@ -139,16 +145,23 @@ public class ProductService {
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("이미지가 존재하지 않습니다."));
 
-		if (target.isThumbnail()) {
-			product.getImages().remove(target);
+		boolean wasThumbnail = target.isThumbnail();
 
-			// 남은 것 중 하나를 대표로
-			if (!product.getImages().isEmpty()) {
-				product.getImages().get(0).setThumbnail(true);
-			}
-		} else {
-			product.getImages().remove(target);
+		Path filePath = Paths.get(uploadBasePath, target.getSaveDir(), target.getSaveName());
+
+		try {
+			Files.deleteIfExists(filePath);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("파일 삭제를 실패했습니다.");
 		}
+
+		product.getImages().remove(target);
+
+		if (wasThumbnail && !product.getImages().isEmpty()) {
+			product.getImages().get(0).setThumbnail(true);
+		}
+
+		productRepository.save(product);
 	}
 
 	// 단건 조회

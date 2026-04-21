@@ -1,6 +1,11 @@
 holiday:
   api:
     key: 9458ec6926ac18251e3c68005a28a…
+
+jwt:
+  secret: my-super-secret-key-for-jwt-token-12345678901234567890
+  expiration: 86400000
+
 spring:
   datasource:
     url: jdbc:mysql://localhost:3308/hanarodb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8

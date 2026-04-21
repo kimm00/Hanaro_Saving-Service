@@ -2,7 +2,11 @@ package com.hana8.hanaro.entity;
 
 import java.time.LocalDate;
 
+import com.hana8.hanaro.common.enums.SubscriptionStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,6 +44,9 @@ public class Subscription extends BaseEntity {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "account_id")
 	private Account account;
+
+	@Enumerated(EnumType.STRING)
+	private SubscriptionStatus status;
 
 	// 가입일
 	private LocalDate startDate;

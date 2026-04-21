@@ -3,6 +3,7 @@ package com.hana8.hanaro.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -257,4 +258,85 @@ class AccountServiceTest {
 		assertThrows(IllegalArgumentException.class,
 			() -> accountService.completeAccount(1L));
 	}
+
+	@Test
+	void makePayment_deposit() {
+
+		Account account = Account.builder()
+			.id(1L)
+			.balance(10000L)
+			.status(AccountStatus.ACTIVE)
+			.build();
+
+		Product product = Product.builder()
+			.productType(ProductType.DEPOSIT)
+			.build();
+
+		Subscription sub = Subscription.builder()
+			.product(product)
+			.paymentAmount(1000L)
+			.paidCount(0)
+			.period(12)
+			.interestRate(5.0)
+			.startDate(LocalDate.now().minusMonths(6))
+			.build();
+
+		when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+		when(subscriptionRepository.findByAccountId(1L)).thenReturn(Optional.of(sub));
+
+		assertThrows(IllegalArgumentException.class,
+			() -> accountService.makePayment(1L));
+	}
+
+	@Test
+	void previewAccount_deposit() {
+
+		Account account = Account.builder()
+			.id(1L)
+			.balance(10000L)
+			.status(AccountStatus.ACTIVE)
+			.build();
+
+		Subscription sub = Subscription.builder()
+			.product(Product.builder()
+				.productType(ProductType.DEPOSIT)
+				.build())
+			.startDate(LocalDate.now().minusMonths(3))
+			.interestRate(5.0)
+			.period(12)
+			.paymentAmount(1000L)
+			.build();
+
+		when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+		when(subscriptionRepository.findByAccountId(1L)).thenReturn(Optional.of(sub));
+		when(accountMapper.toDTO(any()))
+			.thenReturn(AccountResponseDTO.builder().build());
+
+		accountService.previewAccount(1L);
+	}
+
+	@Test
+	void cancelAccount_alreadyMature() {
+
+		Account account = Account.builder()
+			.id(1L)
+			.status(AccountStatus.ACTIVE)
+			.build();
+
+		Subscription sub = Subscription.builder()
+			.product(Product.builder()
+				.productType(ProductType.SAVING)
+				.paymentCycle(PaymentCycle.MONTHLY)
+				.build())
+			.paidCount(12)
+			.period(12)
+			.build();
+
+		when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+		when(subscriptionRepository.findByAccountId(1L)).thenReturn(Optional.of(sub));
+
+		assertThrows(IllegalArgumentException.class,
+			() -> accountService.cancelAccount(1L));
+	}
+
 }

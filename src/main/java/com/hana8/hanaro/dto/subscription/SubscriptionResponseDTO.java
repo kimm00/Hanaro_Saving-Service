@@ -1,16 +1,19 @@
 package com.hana8.hanaro.dto.subscription;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SubscriptionResponseDTO {
 	private Long id;
 
-	private Long memberId;
 	private String memberName;
-
+	private Long memberId;
 	private Long productId;
 	private String productName;
 

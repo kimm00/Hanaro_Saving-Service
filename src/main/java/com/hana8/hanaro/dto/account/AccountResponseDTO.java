@@ -16,7 +16,6 @@ public class AccountResponseDTO {
 	private Long paymentAmount;
 	private Double interestRate;
 	private AccountStatus status;
-	private Long productId;
 	private Double cancelRate;
 
 	private Long currentInterest;       // 지금까지 이자

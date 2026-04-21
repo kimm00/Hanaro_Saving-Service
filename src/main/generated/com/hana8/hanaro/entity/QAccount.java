@@ -39,6 +39,8 @@ public class QAccount extends EntityPathBase<Account> {
 
     public final EnumPath<com.hana8.hanaro.common.enums.AccountStatus> status = createEnum("status", com.hana8.hanaro.common.enums.AccountStatus.class);
 
+    public final QSubscription subscription;
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
@@ -61,6 +63,7 @@ public class QAccount extends EntityPathBase<Account> {
     public QAccount(Class<? extends Account> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
+        this.subscription = inits.isInitialized("subscription") ? new QSubscription(forProperty("subscription"), inits.get("subscription")) : null;
     }
 
 }

@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,11 +39,6 @@ public class Account extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
-	// 상품
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "subscription_id")
-	private Subscription subscription;
-
 	// 잔액
 	private Long balance;
 
@@ -52,5 +48,8 @@ public class Account extends BaseEntity {
 
 	// 가입일
 	private LocalDate startDate;
+
+	@OneToOne(mappedBy = "account")
+	private Subscription subscription;
 
 }
