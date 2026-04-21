@@ -1,0 +1,38 @@
+<<<<<<< HEAD
+@baseUrl=http://localhost:9001/actuator
+
+### 앱 상태 확인 (로드밸런서 헬스체크)
+GET {{baseUrl}}/health
+
+### 운영 중 로그 레벨 변경 (재시작 없이!)
+POST {{baseUrl}}/loggers/com.hana8.demo
+Content-Type: application/json
+
+{
+  "configuredLevel": "INFO"
+}
+
+### 메모리 사용량 확인
+GET {{baseUrl}}/metrics/jvm.memory.used
+=======
+@baseUrl=http://localhost:8080/api
+
+### 상품 가입 (계좌 자동 생성됨)
+POST {{baseUrl}}/subscriptions
+Content-Type: application/json
+
+{
+  "memberId": 1,
+  "productId": 1,
+  "accountNumber": "123-4567-8910"
+}
+
+### 내 가입 내역 조회
+GET {{baseUrl}}/subscriptions/member/1
+
+### 관리자 검색 (like 검색)
+GET {{baseUrl}}/subscriptions/admin/search?keyword=user
+
+### 중도 해지
+POST {{baseUrl}}/subscriptions/1/cancel
+>>>>>>> b70aeda18ad66a4c0fc4e7455f9f211b5c41e237
